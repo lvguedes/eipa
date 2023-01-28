@@ -1,0 +1,5 @@
+import rpa
+import pyautogui as pa
+
+#rpa.waitAppear("./img/add_icon.JPG")
+pa.locateCenterOnScreen("./img/add_icon.JPG", confidence=.5)
