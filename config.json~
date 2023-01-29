@@ -1,7 +1,0 @@
-{
-    "ctrlKey": "ctrl",
-    "mouse_main_button": "right",
-    "wait_subflow_open": 3,
-    "base_wait": 1,
-    "button_subflows": "./img/subflow_icon.JPG"
-}
