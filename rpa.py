@@ -1,10 +1,12 @@
 import pyautogui as pa
-import threading as th
+import concurrent.futures as cf
+import multiprocessing as mp
 
 from time import sleep
 
 default_timeout = 60
 default_confidence = .7
+max_workers = 5
 
 # generates the common timeout message
 def _timeout_message(timeout,img,action):
@@ -49,20 +51,24 @@ def waitAppearAll(imgs:list, timeout=default_timeout):
 
     return positions
 
-# finds
+# finds the firt image that appears on screen
 def waitAppearAny(imgs:list, timeout=default_timeout):
-    for img in imgs:
-        try:
-            pos = waitAppear(img, timeout=timeout)
-            if pos:
-                break
-        except Exception:
-            continue
-    if not pos:
-        raise Exception(
-            f"Images {imgs} not found on screen."
-        )
+    with cf.ProcessPoolExecutor(max_workers=max_workers) as pool:
+        futures = [pool.submit(waitAppear, img) for img in imgs]
+        done, not_done = cf.wait(futures, return_when=cf.FIRST_COMPLETED)
+        for f in not_done:
+            f.cancel()
+        for f in done:
+            exception = f.exception()
+            if exception:
+                raise exception
+            #print(f)
+            print("Future: %s.\nFound image at position: %s" % (f, str(f.result())))
+        pool.shutdown(wait=False)
 
+    # kills all the pending futures (they're subprocesses of interpreter)
+    for proc in mp.active_children():
+        proc.kill()
 
 # waits for any img to disappear from screen
 # within timeout
