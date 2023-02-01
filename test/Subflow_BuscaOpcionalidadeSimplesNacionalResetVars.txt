@@ -1,0 +1,5 @@
+
+FUNCTION Subflow_BuscaOpcionalidadeSimplesNacionalResetVars GLOBAL
+    SET WaitSecs TO 1
+    SET Retries TO 0
+END FUNCTION

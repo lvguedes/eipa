@@ -47,7 +47,7 @@ def waitAppear(img, timeout=DEFAULT_TIMEOUT, confidence=DEFAULT_CONFIDENCE, _sle
     except Exception:
         time.sleep(1)
         _slept+=1
-        print(f"Currently slept {_slept}s. Waiting for {img}")
+        print(f"Waiting appear for {_slept}s. Image: {img}")
         if _slept <= timeout:
             pos = waitAppear(img, _slept=_slept)
             return pos
@@ -65,10 +65,11 @@ def waitDisappear(img, timeout=DEFAULT_TIMEOUT, confidence=DEFAULT_CONFIDENCE, _
             pos = _find_img(img, confidence)
         except Exception:
             if _slept == 0:
-                raise Exception(_image_not_found_message(img))
+                #raise Exception(_image_not_found_message(img))
+                return False
             return True
         time.sleep(1); _slept += 1
-        print(f"Waits for {_slept}s; img: {img}")
+        print(f"Waiting disappear for {_slept}s; img: {img}")
         if _slept >= timeout:
             raise Exception(_timeout_message(timeout,img,'disappear'))
         if not pos:
@@ -146,12 +147,13 @@ def press_sequence(*args, sleep=DEFAULT_PRESS_SLEEP, hold_ctrl=False, ctrl_key=D
     key = str()
     ctrl_seq = bool()
     for arg in args:
+        ctrl_seq = hold_ctrl
+        time.sleep(sleep)
+
         if type(arg) == tuple:
             key, ctrl_seq = arg
         else:
             key = arg
-            
-        time.sleep(sleep)
         
         if ctrl_seq:
             with pa.hold(ctrl_key):
