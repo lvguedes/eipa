@@ -4,10 +4,10 @@ import pyautogui
 import pyperclip as pc
 import os
 import shutil
+import bot
+import rpa
 
 from json import loads
-
-from bot import *
 
 def readConf(path):
     with open(path) as confFile:
@@ -20,14 +20,23 @@ def globalVars():
     global n_subflows
     global current_subflow
     global config
+    global imgs
+
+    imgs = {
+        'rename-subflow': r'.\img\rename-subflow-txt.jpg',
+        'add-icon': r'.\img\add_icon.JPG',
+        'subflow-name': r'.\img\subflow-name-txt.jpg',
+        'subflows-icon': r'.\img\subflow_icon.JPG'
+    }
     
-    confPath = r"./config.json"
+    confPath = r".\config.json"
     config = readConf(confPath)
 
 
 def main():
 
     globalVars()
+
     
     proj_dir = r"C:\Users\lucas.silva\Documents\git\pipp"
     n_subflows = 58
@@ -77,6 +86,10 @@ def main():
     
     # Alert that operation has ended
     pyautogui.alert('Finished with success.')
+
+def main_test():
+    globalVars()
+    bot.openSubflow(imgs)
     
 if __name__ == '__main__':
-    main()
+    main_test()

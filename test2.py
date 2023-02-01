@@ -9,7 +9,8 @@ def main():
         "img/subflow-name-txt.jpg"
     ]
 
-    rpa.waitAppearAny(imgsRenameSubflow)
+    #rpa.waitAppearAny(imgsRenameSubflow)
+    rpa.waitAny(imgsRenameSubflow, rpa.waitAppear)
 
 if __name__ == "__main__":
     main()
