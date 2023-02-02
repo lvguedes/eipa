@@ -3,12 +3,13 @@ import time
 import pyautogui as pa
 import concurrent.futures as cf
 import multiprocessing as mp
-
-
 from collections.abc import Callable
+
+from enum import Enum
 
 # Global Constants
 DEFAULT_TIMEOUT = 60
+DEFAULT_TIMEOUT_IF_IMG = 5
 DEFAULT_CONFIDENCE = .7
 MAX_WORKERS = 5
 DEFAULT_MOUSE_BUTTON = 'right'
@@ -60,14 +61,16 @@ def waitAppear(img, timeout=DEFAULT_TIMEOUT, confidence=DEFAULT_CONFIDENCE, _sle
 # within timeout
 # Returns: True, if the image has disappeared
 def waitDisappear(img, timeout=DEFAULT_TIMEOUT, confidence=DEFAULT_CONFIDENCE, _slept=0):
+    pos = None
     while(True):
         try:
             pos = _find_img(img, confidence)
         except Exception:
             if _slept == 0:
+                pass
                 #raise Exception(_image_not_found_message(img))
-                return False
-            return True
+            else:
+                return True
         time.sleep(1); _slept += 1
         print(f"Waiting disappear for {_slept}s; img: {img}")
         if _slept >= timeout:
@@ -124,6 +127,59 @@ def waitAny(imgs:list, wait_to:Callable, timeout=DEFAULT_TIMEOUT):
     # kills all the pending futures (they're subprocesses of interpreter)
     for proc in mp.active_children():
         proc.kill()
+
+def wait_parallel(until: str, group: str, *args, timeout = DEFAULT_TIMEOUT, max_workers = MAX_WORKERS):
+    callback = None
+    shutdown = None
+    wait_pool = bool()
+    cancel_futures = bool()
+
+    if until.lower() == 'appear':
+        callback = waitAppear
+    elif until.lower() == 'disappear':
+        callback = waitDisappear
+    else:
+        raise Exception("Wrong value. \"until\" accepts only \"appear\" or \"disappear\"")
+
+    if group.lower() == 'all':
+        shutdown_condition = cf.ALL_COMPLETED
+        cancel_futures = False
+        wait_pool = True
+    elif group.lower() == 'any':
+        shutdown_condition = cf.FIRST_COMPLETED
+        cancel_futures = True
+        wait_pool = False
+    else:
+        raise Exception("Wrong value. \"group\" accepts only \"all\" or \"any\"")
+
+    result = None
+    with cf.ProcessPoolExecutor(max_workers=max_workers) as pool:
+        futures = [pool.submit(callback, img) for img in args]
+        done, not_done = cf.wait(futures, return_when=shutdown_condition)
+        for f in done:
+            exception = f.exception()
+            if exception:
+                raise exception
+            result = f.result()
+            #print(f)
+            #print("Future: %s.\nFound image at position: %s" % (f, result))
+        pool.shutdown(wait=wait_pool, cancel_futures=cancel_futures)
+
+    # kills all the pending futures (they're subprocesses of interpreter)
+    for proc in mp.active_children():
+        proc.kill()
+
+def if_image(until, group, *args, then_block: Callable, else_block: Callable = None, timeout=DEFAULT_TIMEOUT_IF_IMG,
+             confidence=DEFAULT_CONFIDENCE, max_workers=MAX_WORKERS):
+    return_val = None
+    try:
+        wait_parallel(until, group, *args, timeout=timeout, max_workers=max_workers)
+        #pdb.set_trace()
+        return_val = then_block()
+    except Exception as e:
+        if else_block:
+            return_val = else_block()
+    return return_val
 
 
 def click(img, button=DEFAULT_MOUSE_BUTTON, timeout=DEFAULT_TIMEOUT, confidence=DEFAULT_CONFIDENCE, offset=tuple()):
