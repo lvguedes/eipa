@@ -1,0 +1,9 @@
+pywinauto (the best for UI Elements); Documentation: https://pywinauto.readthedocs.io/
+pyautogui (the best simple, with image support); Documentation: https://pyautogui.readthedocs.io/
+pyperclip (clipboard manipulations); Documentation: https://pyperclip.readthedocs.io/
+win32gui (low level UI Elements); Documentation: http://timgolden.me.uk/pywin32-docs/win32gui.html
+winguiauto (alternative to high level UI Elements. Constructed uppon win32gui); Full code (with docs): https://raw.githubusercontent.com/arkottke/winguiauto/master/winguiauto.py
+pygetwindow (alternative to high level UI Elements. Focused in extraction); Documentation: https://pygetwindow.readthedocs.io/
+
+GitHub list of GUI Test Automation (which is all pretty good to RPA) in different programming languages!
+https://github.com/atinfo/awesome-test-automation

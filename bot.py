@@ -2,6 +2,8 @@ import pyautogui as pa
 import pyperclip as cb
 import rpa
 import pdb
+import pywinauto as pwa
+
 
 SLEEP_SUBFLOWS_MENU = .5
 SLEEP_FOCUS_SUBFLOW = .2
@@ -10,8 +12,14 @@ SUBFLOW_NAME = str()
 SUBFLOW_CONTENTS = str()
 SUBFLOW_EXTENSION = '.txt'
 PROJECT_DIR = str()
+PAD_DESIGNER_EXE = f'C:\Program Files (x86)\Power Automate Desktop\PAD.Designer.exe'
 
-def openSubflow(imgs: dict):
+def focusPadDesignerWin():
+    app = pwa.Application().connect(path=PAD_DESIGNER_EXE)
+    app.window().set_focus()
+    
+
+def openNextSubflow(imgs: dict):
     # click the subflows menu
     rpa.click(imgs['subflows-icon'])
 
