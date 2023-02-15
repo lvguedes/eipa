@@ -12,7 +12,7 @@ def parse_config():
     with open(bot.CONFIG_PATH) as confFile:
         config = loads(confFile.read())
 
-    bot.PROJECT_DIR = r'test'
+#    bot.PROJECT_DIR = r'test'
 
 def kernel():
     bot.SUBFLOW_NAME = str()

@@ -38,7 +38,7 @@ def finishExec(status=0):
     sys.exit(status)
 
 def clickSubfowCode():
-    return rpa.click(IMGS['subflows-icon'], offset=(222, 58))
+    return rpa.click(IMGS['subflows-icon'], offset=(89, 58))
 
 
 def focusPadDesignerWin():
@@ -49,13 +49,15 @@ def focusPadDesignerWin():
         app.window().set_focus()
     except pwa.findwindows.ElementAmbiguousError as e:
         print(e)
-        print("Trying to fix...")
+        print("Trying to fix (supposing reached the \"Add Subflow\" button)...")
         def then_block():
             print("Worked!")
             rpa.press_sequence("esc")
             return True
+        def else_block():
+            raise Exception("It hasn't located the \"Add Subflow\" pop-up.")
         rpa.if_image("appear", "any", IMGS['add-sf-popup'],
-                     then_block = then_block)
+                     then_block = then_block, else_block = else_block)
         finishExec(status=0)
         clickSubfowCode()
     
