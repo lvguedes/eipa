@@ -5,6 +5,8 @@ import pyperclip as cb
 import argparse as arg
 import bot
 import rpa
+import multiprocessing
+import sys
 
 from json import loads
 
@@ -67,6 +69,8 @@ def process_cli_options():
     bot.SKIP_MAIN_SUBFLOW = args.skip_main_sf
     
 if __name__ == '__main__':
+    if sys.platform.startswith('win'):
+        multiprocessing.freeze_support()
     process_cli_options()
     main()
     # main_test() # to test only one subflow
